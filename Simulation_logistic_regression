@@ -5,6 +5,91 @@ and you want to determine whether the model is fair with respect to on of the fe
 
 1. 
 import numpy as np
+from numpy.random import RandomState 
+import pandas as pd 
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, accuracy_score
+import statsmodels.api as sm
+#simulate data
+np.random.seed(1)
+n = 2000
+
+#gender: 0/female, 1/male
+gender = np.random.binomial(1, 0.5, size = n)
+
+#loan
+loan_amount = np.random.uniform(700, 50, size = n)
+#Bureau info 
+credits_score = np.random.normal(700,  50, size = n)
+
+X = pd.DataFrame({
+    'gender':gender,
+    'loan_amount' : loan_amount,
+    'credits_score' : credits_score
+})
+#approval prob with biase eg. gender
+logit = (
+    0.005*(credits_score - 700) 
+    - 0.001*(loan_amount - 1000)
+    + 0.05 * gender
+)
+
+approval_prob = 1 / (1+np.exp(-logit))
+y = np.random.binomial(1, approval_prob)
+
+#train/train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 42)
+
+#train logistic regression without gender
+model = LogisticRegression()
+model.fit(X_train.drop(columns = ['gender']), y_train)
+
+#predict
+y_pred = model.predict(X_test.drop(columns = ['gender']))
+print(f"Overall accurary: {accuracy_score(y_test, y_pred): .3f}")
+
+#calculate fairness metrics manually
+def fairness_metrics(y_true, y_pred, sensitive_attr):
+    metric = {}
+    group = np.unique(sensitive_attr)
+
+    for g in group:
+        idx = (sensitive_attr == g)
+        y_true_g = y_test[idx]
+        y_pred_g = y_pred[idx]
+
+        #selection rate = p(predicted = 1)
+        selection_rate = np.mean(y_pred_g)
+        #confusion_matrix components
+        tn, fp, fn, tp = confusion_matrix(y_true_g, y_pred_g).ravel()
+
+        #tpr = tp /(tp + fp)
+        tpr = tp/(tp+fp) if (tp+fp) > 0 else 0
+        #fpr = fp / (fp + tn)
+        fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
+
+        metric[g] = {
+            'Selection Rate': selection_rate,
+            'True Positive Rate': tpr,
+            'False positive Rate': fpr
+        }
+    return metric
+
+#calculate fairness metrics by gender
+metrics_by_gender = fairness_metrics(y_test, y_pred, X_test['gender'].values)
+for gender_val, metric_dict in metrics_by_gender.items():
+    gender_str = 'Male' if gender_val == 1 else 'Famale'
+    print(f"{gender_str}:")
+    for metric_name, value in metric_dict.items():
+        print(f" {metric_name}:{value:.3f}")
+
+#calcualte the difference
+diff_selection_rate = abs(metrics_by_gender[1]['Selection Rate'] - metrics_by_gender[0]['Selection Rate'])
+print(f"Difference in selection rate between genders:{diff_selection_rate: .3f}")
+
+2. 
+import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
