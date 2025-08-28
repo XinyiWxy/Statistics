@@ -1,4 +1,5 @@
 a simple simulation code that runs the dice rolls and prints out the probabilities of each remainder modulo 6 as plain text
+
 What this does:
 Runs 1,000,000 simulations of rolling six dice and summing.
 Calculates sum modulo 6.
@@ -11,7 +12,7 @@ import numpy as np
 
 np.random.seed(2)
 
-n_trials = 100000
+n_trials = 1000000
 
 #simulate rolling 6 dice n_trials times
 rolls = np.random.randint(1,7,size = (n_trials, 6))
