@@ -6,6 +6,34 @@ Counts how often each remainder (0 through 5) appears.
 Prints the probability alongside a simple text-based bar (using *) scaled to probability.
 
 
+1. 
+import numpy as np
+
+np.random.seed(2)
+
+n_trials = 100000
+
+#simulate rolling 6 dice n_trials times
+rolls = np.random.randint(1,7,size = (n_trials, 6))
+
+#sum across each trial 
+sums = np.sum(rolls,  axis = 1)
+
+#compute modulo 6 of sums
+modulo_result = sums % 6
+
+#count frequencies of each remainder 0 -5
+counts = np.bincount(modulo_result, minlength = 6)
+
+#count prob
+probs = counts/n_trials
+
+#print prob 
+print(probs)
+print(1/6)
+
+2.
+
 import numpy as np
 
 np.random.seed(42)
