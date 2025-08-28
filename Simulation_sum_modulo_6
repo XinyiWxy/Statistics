@@ -1,0 +1,33 @@
+a simple simulation code that runs the dice rolls and prints out the probabilities of each remainder modulo 6 as plain text
+What this does:
+Runs 1,000,000 simulations of rolling six dice and summing.
+Calculates sum modulo 6.
+Counts how often each remainder (0 through 5) appears.
+Prints the probability alongside a simple text-based bar (using *) scaled to probability.
+
+
+import numpy as np
+
+np.random.seed(42)
+
+num_trials = 1_000_000  # number of experiments
+
+# Simulate rolling 6 dice num_trials times
+rolls = np.random.randint(1, 7, size=(num_trials, 6))
+
+# Sum across each trial
+sums = np.sum(rolls, axis=1)
+
+# Compute modulo 6 of the sums
+modulo_results = sums % 6
+
+# Count frequencies of each remainder 0-5
+counts = np.bincount(modulo_results, minlength=6)
+
+# Compute probabilities
+probs = counts / num_trials
+
+# Print probabilities with a simple text bar visualization
+for r in range(6):
+    bar = '*' * int(probs[r] * 50)  # scale for visualization
+    print(f"Remainder {r}: Probability ≈ {probs[r]:.4f} {bar}")
