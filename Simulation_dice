@@ -1,0 +1,27 @@
+27.
+
+import random
+
+def simulate_coupon_collector(n_faces, trials):
+    total_rolls = 0
+    
+    for _ in range(trials):
+        seen = set()
+        rolls = 0
+        
+        while len(seen) < n_faces:
+            roll = random.randint(1, n_faces)
+            seen.add(roll)
+            rolls += 1
+        
+        total_rolls += rolls
+    
+    average_rolls = total_rolls / trials
+    return average_rolls
+
+# Parameters
+n = 6              # 6-sided die
+num_trials = 10000  # Number of simulations
+
+result = simulate_coupon_collector(n, num_trials)
+print(f"Average rolls to collect all {n} faces: {result:.4f}")
