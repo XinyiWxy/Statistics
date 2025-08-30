@@ -1,0 +1,49 @@
+💡 What This Does:
+Simulates 100,000 flights.
+Compares the outcome when the second drunk is:
+Passenger #5
+Passenger #45
+Measures how often the 50th passenger sits in their own seat.
+
+
+
+import random
+
+def simulate_second_drunk(total_passengers=50, second_drunk_pos=5, simulations=100_000):
+    seat_numbers = list(range(1, total_passengers + 1))
+    success_count = 0
+
+    for _ in range(simulations):
+        seats = [None] * total_passengers  # None means unoccupied
+        available_seats = set(seat_numbers)
+
+        # Drunk passenger 1 chooses randomly
+        drunk1_choice = random.choice(seat_numbers)
+        seats[drunk1_choice - 1] = 1
+        available_seats.remove(drunk1_choice)
+
+        for i in range(2, total_passengers + 1):
+            if i == second_drunk_pos:
+                # Second drunk person: chooses a random available seat
+                seat_choice = random.choice(list(available_seats))
+            else:
+                # Normal logic: try to sit in their own seat
+                if seats[i - 1] is None:
+                    seat_choice = i
+                else:
+                    seat_choice = random.choice(list(available_seats))
+            seats[seat_choice - 1] = i
+            available_seats.remove(seat_choice)
+
+        # Check if passenger 50 sat in seat 50
+        if seats[49] == 50:
+            success_count += 1
+
+    return success_count / simulations
+
+# Run simulations for second drunk at position 5 and 45
+prob_drunk5 = simulate_second_drunk(second_drunk_pos=5)
+prob_drunk45 = simulate_second_drunk(second_drunk_pos=45)
+
+print(f"Probability (second drunk at position 5): {prob_drunk5:.4f}")
+print(f"Probability (second drunk at position 45): {prob_drunk45:.4f}")
