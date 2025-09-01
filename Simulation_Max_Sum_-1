@@ -1,0 +1,13 @@
+def maxSubArray(nums):
+    max_sum = nums[0]
+    current_sum = 0
+
+    for num in nums:
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+
+    return max_sum if max_sum >= 0 else -1
+
+# Test
+nums = [-3, -5, -2]
+print(maxSubArray(nums))  # Output: -1
