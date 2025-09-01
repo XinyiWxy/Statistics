@@ -1,0 +1,24 @@
+def find_pythagorean_triplets(arr):
+    n = len(arr)
+    arr = sorted(arr)
+    squared = [x * x for x in arr]
+    result = []
+
+    for c in range(n - 1, 1, -1):
+        a = 0
+        b = c - 1
+        while a <= b:
+            sum_ab = squared[a] + squared[b]
+            if sum_ab == squared[c]:
+                result.append((arr[a], arr[b], arr[c]))
+                a += 1
+                b -= 1
+            elif sum_ab < squared[c]:
+                a += 1
+            else:
+                b -= 1
+
+    return result
+
+nums = [1, 2, 4, 5, 3]
+print(find_pythagorean_triplets(nums))
