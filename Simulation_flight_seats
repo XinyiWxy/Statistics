@@ -5,6 +5,32 @@ Passenger #5
 Passenger #45
 Measures how often the 50th passenger sits in their own seat.
 
+import random
+
+num_passengers = 50
+seats = list(range(1, num_passengers + 1))  # seats 1 to 50
+
+taken_seats = set()
+
+# First passenger picks a random seat
+first_seat = random.choice(seats)
+taken_seats.add(first_seat)
+
+# Passengers 2 to 50 board
+for passenger in range(2, num_passengers + 1):
+    assigned_seat = passenger
+    if assigned_seat not in taken_seats:
+        # Sit in assigned seat if available
+        taken_seats.add(assigned_seat)
+    else:
+        # Otherwise pick a random free seat
+        free_seats = [seat for seat in seats if seat not in taken_seats]
+        seat = random.choice(free_seats)
+        taken_seats.add(seat)
+
+print(f"First passenger took seat {first_seat}")
+print(f"Seats taken: {sorted(taken_seats)}")
+
 
 
 import random
